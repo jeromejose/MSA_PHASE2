@@ -5,22 +5,23 @@ import { ChakraProvider,Accordion,
   AccordionItem,
   AccordionButton,
   AccordionPanel,
-  AccordionIcon, Box } from '@chakra-ui/react'
+  AccordionIcon, Box, Center } from '@chakra-ui/react'
 // fetch and 
 function App() {
-  const [characterName, setCharacterName] = useState("");
+  const [characterName, setCharacterName] = useState<undefined | any>(undefined);
   const [characterInfo, setCharacterInfo] = useState<undefined | any>(undefined);
   const GENSHIN_BASE_API_URL = "https://api.genshin.dev";
   const [currentCharacterName, setCurrentCharacterName] = useState("");
+
   return (
     <ChakraProvider>
     <div>
-      <h1>Genshin Character Search</h1>
+      <h1 style={{fontSize:40, textAlign:'center',}}>Genshin Character Search</h1>
 
       <div>
-        <label>Character Name</label>
+        <label style={{textAlign:'center'}}>Character Name</label>
         <br />
-        <input
+        <input style={{textAlign:'center'}}
           type="text"
           id="character-name"
           name="character-name"
@@ -36,18 +37,23 @@ function App() {
         <p style={{fontSize:20}}>Character not found</p>
       ) : (
         <div id="character-result">
-          <img width="280" height="auto"src={GENSHIN_BASE_API_URL + "/characters/" + currentCharacterName + "/card"} />
+          <img width="280" height="auto" style ={{alignSelf:'center'}}src={GENSHIN_BASE_API_URL + "/characters/" + currentCharacterName + "/card"} />
+          <h1>Description:</h1>
+          <p>{characterInfo.description}</p>
         <Accordion allowMultiple>
           <AccordionItem>
             <h2>
               <AccordionButton>
                 <Box flex='1' textAlign='left'>
-                  Best Artifacts
+                  About
                 </Box>
                 <AccordionIcon />
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
+            Affiliation: {characterInfo.affiliation} <br/>
+            Vision: {characterInfo.vision} <br/>
+            Weapon: {characterInfo.weapon}
             </AccordionPanel>
           </AccordionItem>
 
@@ -55,16 +61,13 @@ function App() {
             <h2>
               <AccordionButton>
                 <Box flex='1' textAlign='left'>
-                  Teams
+                  Constellations
                 </Box>
                 <AccordionIcon />
               </AccordionButton>
             </h2>
             <AccordionPanel pb={4}>
-              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
-              tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
-              veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
-              commodo consequat.
+            {characterInfo.constellation}
             </AccordionPanel>
           </AccordionItem>
       </Accordion>
@@ -77,9 +80,14 @@ function App() {
 
   function search() {
     setCurrentCharacterName(characterName);
-    axios.get(GENSHIN_BASE_API_URL + "/characters/" + characterName + "/card").then((res) => {
-      setCharacterInfo(res.data);
-      console.log(res.data);
+    axios.get(GENSHIN_BASE_API_URL + "/characters/" + characterName)
+    .then(res => {
+      setCharacterInfo(res.data)
+      console.log(res.data)
+      })
+    .catch(err =>{
+      console.log(err.message);
+      setCharacterInfo(undefined);
     });
   }
 }
